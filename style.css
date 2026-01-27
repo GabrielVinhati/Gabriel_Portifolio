@@ -925,13 +925,14 @@ footer .line-footer p a:hover {
   
   #tab-frontend .project-tag {
     display: inline-block;
-    font-size: 0.7rem;
+    font-size: 1rem;
     background: rgba(59, 130, 246, 0.18);
     color: var(--color-primary);
     padding: 3px 8px;
     border-radius: 6px;
     margin-top: 6px;
     font-weight: 700;
+    margin-bottom: 6px;
   }
   
   /* tag verde (CZ Mídia) igual ao exemplo */
@@ -950,83 +951,541 @@ footer .line-footer p a:hover {
     }
   }
   /* Não fazer “scroll” em cards específicos (logos) */
-#tab-frontend .scroll-project.no-scroll {
-    background-position: center center !important;
-    background-size: cover !important;  /* ou: contain (se quiser ver a logo inteira) */
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
-  }
-  
-  /* Remove o efeito de descer o background no hover */
-  #tab-frontend .scroll-project.no-scroll:hover {
-    background-position: center center !important;
-  }
-  /* ======================================
+
+ /* ======================================
    FRONT-END: Logo cards (contain + fundo premium)
    ====================================== */
 
 /* Desliga “scroll” de background e centraliza */
 #tab-frontend .scroll-project.no-scroll {
-    background-position: center center !important;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+  background-position: center center !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+#tab-frontend .scroll-project.no-scroll:hover {
+  background-position: center center !important;
+}
+
+/* Card especial de LOGO: logo em contain + fundo bonito */
+#tab-frontend .scroll-project.logo-card {
+  position: relative;
+  isolation: isolate; /* garante layers/overlay certinhos */
+  background-color: #0b1220;
+
+  /* 3 camadas: [logo] + [glow] + [gradiente] */
+  background-image:
+    var(--logo),
+    radial-gradient(600px circle at 30% 20%, rgba(59,130,246,0.25), transparent 55%),
+    linear-gradient(135deg, rgba(2,6,23,0.95), rgba(15,23,42,0.85));
+
+  /* Logo com “contain” controlável via --logo-size */
+  background-size:
+    var(--logo-size, 72%) auto,
+    cover,
+    cover;
+
+  background-position: center, center, center;
+  background-repeat: no-repeat;
+}
+
+/* Um brilho sutil (tipo “glass”) por cima do fundo */
+#tab-frontend .scroll-project.logo-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(120deg,
+      rgba(255,255,255,0.06) 0%,
+      rgba(255,255,255,0.02) 35%,
+      rgba(255,255,255,0.00) 60%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Mantém o texto acima das camadas */
+#tab-frontend .scroll-project.logo-card .project-info {
+  z-index: 1;
+}
+
+/* Opcional: no hover, dá um “glow” levinho (sem scroll) */
+#tab-frontend .scroll-project.logo-card:hover {
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.18);
+  border-color: var(--color-primary);
+  transform: translateY(-5px);
+}
+
+/* No mobile, não some o overlay (já que não tem hover real) */
+@media (max-width: 768px) {
+  #tab-frontend .scroll-project.logo-card:hover .project-info {
+    opacity: 1;
+  }
+}
+
+  /* Social icons: remove "pontinhos" do abbr + evita underline/artefato inline */
+.g-social{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.g-social abbr[title],
+.g-social abbr[data-bs-original-title]{
+  text-decoration: none !important;
+  border-bottom: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex;
+}
+
+.g-social a{
+  text-decoration: none !important;
+  display: inline-flex;
+}
+
+.g-social button:focus,
+.g-social button:active,
+.g-social a:focus,
+.g-social a:active{
+  outline: none !important;
+  box-shadow: none !important;
+}
+/* ======================================
+   FRONT-END: Logo cards (contain + fundo premium) [FIX]
+   ====================================== */
+
+/* corta o scroll desses cards */
+#tab-frontend .scroll-project.no-scroll,
+#tab-frontend .scroll-project.no-scroll:hover {
+  background-position: center !important;
+}
+
+/* fundo premium (gradientes) */
+#tab-frontend .scroll-project.logo-card {
+  position: relative;
+  overflow: hidden;
+
+  /* fundo bonito */
+  background-image:
+    radial-gradient(600px circle at 30% 20%, rgba(59,130,246,0.25), transparent 55%),
+    linear-gradient(135deg, rgba(2,6,23,0.95), rgba(15,23,42,0.85));
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat;
+
+  /* remove a transição do background-position (pra não "scrollar") */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+/* a LOGO em contain (independente do background do card) */
+#tab-frontend .scroll-project.logo-card::before {
+  content: "";
+  position: absolute;
+  inset: var(--logo-inset, 18%); /* menor = logo maior | maior = logo menor */
+  background-image: var(--logo);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  z-index: 0;
+  filter: drop-shadow(0 10px 25px rgba(0,0,0,0.35));
+}
+
+/* brilho glass por cima do fundo */
+#tab-frontend .scroll-project.logo-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0.06) 0%,
+    rgba(255,255,255,0.02) 35%,
+    rgba(255,255,255,0.00) 60%
+  );
+  pointer-events: none;
+}
+
+/* texto por cima de tudo */
+#tab-frontend .scroll-project.logo-card .project-info {
+  z-index: 2;
+}
+
+/* impede o hover geral de tentar jogar pro "bottom center" */
+#tab-frontend .scroll-project.logo-card:hover {
+  background-position: center, center !important;
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.18);
+  border-color: var(--color-primary);
+}
+
+/* Se você quiser que o texto NÃO suma nesses cards, descomenta: */
+/*
+#tab-frontend .scroll-project.logo-card:hover .project-info {
+  opacity: 1 !important;
+}
+*/
+/* ==========================
+   WhatsApp Floating Button
+   ========================== */
+
+   .wa-float {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 9999;
+  
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
   
-  #tab-frontend .scroll-project.no-scroll:hover {
-    background-position: center center !important;
+  .wa-btn {
+    width: 58px;
+    height: 58px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: linear-gradient(135deg, #25d366, #1fb957);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
+  
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   
-  /* Card especial de LOGO: logo em contain + fundo bonito */
-  #tab-frontend .scroll-project.logo-card {
+  .wa-btn i {
+    font-size: 30px;
+    color: #fff;
+    line-height: 1;
+  }
+  
+  .wa-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 44px rgba(37, 211, 102, 0.25);
+  }
+  
+  /* Balão */
+  .wa-bubble {
     position: relative;
-    isolation: isolate; /* garante layers/overlay certinhos */
-    background-color: #0b1220;
+    padding: 10px 12px;
+    border-radius: 14px;
   
-    /* 3 camadas: [logo] + [glow] + [gradiente] */
-    background-image:
-      var(--logo),
-      radial-gradient(600px circle at 30% 20%, rgba(59,130,246,0.25), transparent 55%),
-      linear-gradient(135deg, rgba(2,6,23,0.95), rgba(15,23,42,0.85));
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: #fff;
   
-    /* Logo com “contain” controlável via --logo-size */
-    background-size:
-      var(--logo-size, 72%) auto,
-      cover,
-      cover;
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
   
-    background-position: center, center, center;
-    background-repeat: no-repeat;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
   }
   
-  /* Um brilho sutil (tipo “glass”) por cima do fundo */
-  #tab-frontend .scroll-project.logo-card::after {
+  /* setinha do balão */
+  .wa-bubble::after {
     content: "";
     position: absolute;
-    inset: 0;
-    z-index: 0;
-    background:
-      linear-gradient(120deg,
-        rgba(255,255,255,0.06) 0%,
-        rgba(255,255,255,0.02) 35%,
-        rgba(255,255,255,0.00) 60%);
-    opacity: 0.9;
-    pointer-events: none;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  
+    width: 12px;
+    height: 12px;
+  
+    background: rgba(15, 23, 42, 0.88);
+    border-right: 1px solid rgba(255, 255, 255, 0.10);
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
   }
   
-  /* Mantém o texto acima das camadas */
-  #tab-frontend .scroll-project.logo-card .project-info {
-    z-index: 1;
-  }
+  /* Mobile: reduz e coloca o balão acima pra não “espremê” */
+  @media (max-width: 520px) {
+    .wa-float {
+      right: 14px;
+      bottom: 14px;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
   
-  /* Opcional: no hover, dá um “glow” levinho (sem scroll) */
-  #tab-frontend .scroll-project.logo-card:hover {
-    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.18);
-    border-color: var(--color-primary);
-    transform: translateY(-5px);
-  }
+    .wa-btn {
+      width: 54px;
+      height: 54px;
+    }
   
-  /* No mobile, não some o overlay (já que não tem hover real) */
-  @media (max-width: 768px) {
-    #tab-frontend .scroll-project.logo-card:hover .project-info {
-      opacity: 1;
+    .wa-btn i {
+      font-size: 28px;
+    }
+  
+    .wa-bubble {
+      font-size: 0.9rem;
+      padding: 9px 11px;
+    }
+  
+    .wa-bubble::after {
+      right: 16px;
+      top: calc(100% - 2px);
+      transform: rotate(45deg);
+      border-right: 0;
+      border-top: 0;
+      border-left: 1px solid rgba(255, 255, 255, 0.10);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10);
     }
   }
   
+  /* Acessibilidade: reduz animação */
+  @media (prefers-reduced-motion: reduce) {
+    .wa-btn,
+    .wa-bubble {
+      transition: none !important;
+    }
+  }
+  /* =========================================
+   SERVIÇOS & PLANOS
+========================================= */
+section.servicos{
+  padding: 85px 4%;
+  background:
+    radial-gradient(900px circle at 20% 20%, rgba(59,130,246,0.10), transparent 55%),
+    radial-gradient(900px circle at 80% 0%, rgba(139,92,246,0.10), transparent 55%),
+    #020617;
+  border-top: 1px solid #1e293b;
+  border-bottom: 1px solid #1e293b;
+}
+
+.servicos-sub{
+  text-align: center;
+  max-width: 780px;
+  margin: -28px auto 18px;
+  color: #cbd5e1;
+  opacity: 0.9;
+  line-height: 1.7;
+}
+
+.servicos-grid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.servico-card{
+  background: rgba(15,23,42,0.72);
+  border: 1px solid rgba(148,163,184,0.16);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.servico-card:hover{
+  transform: translateY(-6px);
+  border-color: rgba(59,130,246,0.7);
+  box-shadow: 0 16px 44px rgba(59,130,246,0.14);
+}
+
+.servico-head{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.servico-icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(59,130,246,0.14);
+  border: 1px solid rgba(59,130,246,0.22);
+}
+
+.servico-icon i{
+  font-size: 20px;
+  color: #bfdbfe;
+}
+
+.servico-title h3{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.servico-badge{
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(139,92,246,0.16);
+  border: 1px solid rgba(139,92,246,0.22);
+  color: #ddd6fe;
+  font-weight: 800;
+}
+
+.servico-pricing{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0 12px;
+}
+
+.servico-pricing.one-line{
+  grid-template-columns: 1fr 1fr;
+}
+
+.price-box{
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(148,163,184,0.14);
+  background: rgba(2,6,23,0.45);
+}
+
+.price-label{
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 900;
+}
+
+.price-value{
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  color: #e2e8f0;
+  font-weight: 900;
+}
+
+.servico-lista{
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 14px;
+  display: grid;
+  gap: 8px;
+  color: #d7e2f2;
+  opacity: 0.95;
+  font-size: 13px;
+}
+
+.servico-lista i{
+  color: #93c5fd;
+  margin-right: 6px;
+}
+
+.servico-cta{
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--gradient-main);
+  color: #fff;
+  font-weight: 900;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.servico-cta:hover{
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+/* Social: deixa em 3 colunas no desktop */
+.servicos-grid.social-grid{
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Responsivo */
+@media (max-width: 1020px){
+  .servicos-grid{
+    grid-template-columns: 1fr;
+  }
+  .servicos-grid.social-grid{
+    grid-template-columns: 1fr;
+  }
+  .servico-pricing{
+    grid-template-columns: 1fr;
+  }
+}
+/* =========================================
+   NAV – Destaque do link "Serviços"
+========================================= */
+.nav-highlight {
+  position: relative;
+  font-size: 1.2em; /* levemente maior */
+  font-weight: 700;
+  color: #fff !important;
+  padding: 4px 2px;
+  
+  /* Gradient animado no texto */
+  background: var(--gradient-main);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: navGradientPulse 3s ease infinite;
+
+  /* deixa ele "vivo" */
+  text-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+}
+
+/* Sublinhado já visível */
+.nav-highlight::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--gradient-main);
+  animation: underlinePulse 1s ease infinite;
+}
+
+/* Hover: pausa animação e deixa sólido */
+.nav-highlight:hover {
+  -webkit-text-fill-color: #fff;
+  background: none;
+  animation: none;
+}
+
+/* =========================================
+   Animações
+========================================= */
+@keyframes navGradientPulse {
+  0% {
+    background-position: 0% 50%;
+    opacity: 0.85;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.85;
+  }
+}
+
+@keyframes underlinePulse {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
